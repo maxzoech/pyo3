@@ -7,7 +7,7 @@ use crate::{PyAny, PyResult, Python};
 #[repr(transparent)]
 pub struct PyCodeObject(PyAny);
 
-pyobject_native_type_core!(PyCodeObject, ffi::PyTuple_Type, #checkfunction=ffi::PyCode_Check);
+pyobject_native_type_core!(PyCodeObject, ffi::PyCode_Type, #checkfunction=ffi::PyCode_Check);
 
 impl PyCodeObject {
 
