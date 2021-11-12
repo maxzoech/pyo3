@@ -76,6 +76,20 @@ pub const CO_FUTURE_GENERATOR_STOP: c_int = 0x8_0000;
 
 pub const CO_MAXBLOCKS: usize = 20;
 
+#[cfg(not(PyPy))]
+macro_rules! _access_field {
+    ($obj:expr, $type: ident, $field:ident) => {
+        (*($obj as *mut $type)).$field
+    };
+}
+
+#[cfg(not(PyPy))]
+macro_rules! _access_code_field {
+    ($obj:expr, $field:ident) => {
+        _access_field!($obj, PyCodeObject, $field)
+    };
+}
+
 #[cfg_attr(windows, link(name = "pythonXY"))]
 extern "C" {
     pub static mut PyCode_Type: PyTypeObject;
@@ -91,6 +105,12 @@ pub unsafe fn PyCode_Check(op: *mut PyObject) -> c_int {
 #[cfg(not(PyPy))]
 pub unsafe fn PyCode_GetNumFree(op: *mut PyCodeObject) -> Py_ssize_t {
     crate::ffi::PyTuple_GET_SIZE((*op).co_freevars)
+}
+
+#[inline]
+#[cfg(not(PyPy))]
+pub unsafe fn PyCode_GetCode(op: *mut PyObject) -> *mut PyObject {
+    return _access_code_field!(op, co_code);
 }
 
 extern "C" {

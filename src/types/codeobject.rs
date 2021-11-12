@@ -1,10 +1,12 @@
 use std::ffi::CString;
 
 use crate::ffi;
-use crate::{PyAny, PyResult, Python};
+use crate::{PyAny, PyResult, Python, PyNativeType, AsPyPointer};
+use crate::types::{PyBytes};
 
 /// Represents a Python code object
 #[repr(transparent)]
+#[cfg(not(PyPy))]
 pub struct PyCodeObject(PyAny);
 
 pyobject_native_type_core!(PyCodeObject, ffi::PyCode_Type, #checkfunction=ffi::PyCode_Check);
@@ -22,8 +24,11 @@ impl PyCodeObject {
         }
     }
 
-    pub fn code (&self) {
-        
+    pub fn code (&self) -> &PyBytes {
+        unsafe {
+            return self.py()
+                .from_owned_ptr::<PyBytes>(ffi::PyCode_GetCode(self.as_ptr()));
+        }
     }
 }
 
@@ -35,8 +40,10 @@ mod tests {
     #[test]
     fn test_compile_string() {
         Python::with_gil(|py| {
-            PyCodeObject::compile_string(py, "a = 3 + 6", "<filename>")
+            let code_object = PyCodeObject::compile_string(py, "a = 3 + 6", "<filename>")
                 .expect("Code compilation failed");
+
+            println!("{:?}", code_object.code().as_bytes());
         });
     }
 
