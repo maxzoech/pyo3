@@ -113,6 +113,36 @@ pub unsafe fn PyCode_GetCode(op: *mut PyObject) -> *mut PyObject {
     return _access_code_field!(op, co_code);
 }
 
+#[inline]
+#[cfg(not(PyPy))]
+pub unsafe fn PyCode_GetConsts(op: *mut PyObject) -> *mut PyObject {
+    return _access_code_field!(op, co_consts);
+}
+
+#[inline]
+#[cfg(not(PyPy))]
+pub unsafe fn PyCode_GetNames(op: *mut PyObject) -> *mut PyObject {
+    return _access_code_field!(op, co_names);
+}
+
+#[inline]
+#[cfg(not(PyPy))]
+pub unsafe fn PyCode_GetVarNames(op: *mut PyObject) -> *mut PyObject {
+    return _access_code_field!(op, co_varnames);
+}
+
+#[inline]
+#[cfg(not(PyPy))]
+pub unsafe fn PyCode_GetFreeVars(op: *mut PyObject) -> *mut PyObject {
+    return _access_code_field!(op, co_freevars);
+}
+
+#[inline]
+#[cfg(not(PyPy))]
+pub unsafe fn PyCode_GetCellVars(op: *mut PyObject) -> *mut PyObject {
+    return _access_code_field!(op, co_cellvars);
+}
+
 extern "C" {
     #[cfg(PyPy)]
     #[link_name = "PyPyCode_Check"]
